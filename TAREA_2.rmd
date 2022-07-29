@@ -1,0 +1,247 @@
+
+"FUNCIONES EN R"
+
+Estructura de una función 
+
+En una Funcion existen 3 tipos de elementos
+
+1) Argumentos (valores de entrada)
+2) Cuerpo (operaciones que han de realizarse."{}”)
+3) Resultado(valores de salida)
+
+Ejemplo de una estructura:
+
+Mifunc <- function(argumento1,argumento2,...){resultado}
+
+Ejemplo de una funcion valida
+
+```{r}
+suma <- function(x,y){x+y}
+    
+suma(x=2,y=3)
+```
+Argumentos de una funcion
+
+Los argumentos de una funcion son una serie de valores (opcionales) que se pasan a la funcion, de modo que ciertas variables dentro de estas posean diferentes valores en cada llamada a la funcion.
+
+```{r}
+
+area_rectangulo <- function(lado1, lado2) 
+{
+  area <- lado1 * lado2
+  print(paste("el área es ", area))
+}
+
+area_rectangulo(2, 3)
+"el área es  6"
+
+formals(area_rectangulo)
+$lado1
+$lado2
+
+```
+Cuando se hace un llamado a una función, el orden en que se pasan los valores de los argumentos corresponde con la ubicación de estos en la delación de la función. Por ejemplo, en el caso anterior, el valor 2 se pasa a la variable lado1, mientras que el valor 3 se pasa a la variable lado2. Si queremos indicar explícitamente que valor asignar a cada argumento debemos indicar el nombre de este al llamar a la función.
+
+```{r}
+area_rectangulo <- function(lado1, lado2) 
+{
+  area <- lado1 * lado2
+  print(paste("el área es ", area))
+}
+area_rectangulo(lado1 = 2, lado2 = 3)
+
+```
+Este ultimo método es el más recomendable cuando las funciones tienen un gran numero de argumentos. Algo a notar cuando asignamos valores a los argumentos es que se suele utiliza el operador =, en vez del <-. Esto es simplemente una cuestión de estilo, ya que de otro modo seguiría funcionando correctamente la código.
+
+Ahora supongamos que hacemos una llamada a una función que tenga una serie de argumentos, pero uno de estos no lo pasamos. Lo que sucederá es que la función se ejecutará hasta el punto en que debe ser utilizado el argumento faltante, y es en este momento que se genera un error. Este modo de funcionamiento se debe a que R evalúa las instrucciones al momento de ejecutarse (Lazy Evaluation), y no antes. En caso de que la función nunca utilice el argumento faltante, esta terminará su ejecución sin generar error.
+
+```{r}
+f <- function(x = NULL, y = NULL)
+{
+  if (!is.null(x) & !is.null(y)){
+    print(x+y)
+  }else{
+    print('faltan valores')
+  }
+}
+
+f(x = 2, y = 0)
+2
+f(x = 2)
+"faltan valores"
+f(y = 0)
+"faltan valores"
+```
+
+```{r}
+my_sum <- function(a, b) {
+  the_sum <- a + b
+  return(the_sum)
+}
+
+fahr_to_kelvin <- function(temp) {
+  kelvin <- ((temp - 32) * (5 / 9)) + 273.15
+  return(kelvin)
+}
+```
+
+
+Definimos fahr_a_kelvin() asignándola al output de function. La lista de los nombres de los argumentos se encuentran entre paréntesis. Luego, el cuerpo de la función–los comandos que son ejecutados cuando se corre–se encuentran entre paréntesis curvos ({}). Los comandos en el cuerpo se indentan con dos espacios. Esto hace que el código sea legible sin afectar su funcionalidad.
+
+Cuando utilizamos la función, los valores que definimos como argumentos se asignan a esas variables para que podamos usarlos dentro de la función. Dentro de la función, usamos un return statement para devolver un resultado a quien lo solicitó.
+
+```{r}
+fahr_to_kelvin(32)
+```
+El poder real de las funciones proviene de mezclarlas y combinarlas en pedazos de código aún mas grandes para lograr el resultado que buscamos.
+
+Definamos dos funciones que convertirán la temperatura de Fahrenheit a Kelvin, y de Kelvin a Celsius:
+
+
+```{r}
+fahr_to_kelvin <- function(temp) {
+  kelvin <- ((temp - 32) * (5 / 9)) + 273.15
+  return(kelvin)
+}
+
+kelvin_to_celsius <- function(temp) {
+  celsius <- temp - 273.15
+  return(celsius)
+}
+```
+
+Las funciones en R casi siempre hacen copias de los datos para operar dentro del cuerpo de una función. Cuando modificamos dat dentro de la función estamos modificando la copia del dataset gapminder almacenado en dat, y no la variable original que asignamos como el primer argumento.
+
+Eso se llama __pasar por valor__ y hace la escritura del código mucho más segura: puedes estar seguro que cualquier cambio que hagas dentro del cuerpo de la función, se mantendrá dentro de la función.
+
+Las variables (¡o funciones!) que creas o modificas dentro del cuerpo de una función sólo existen durante el tiempo de ejecución de la función. Cuando llamamos calcGDP(), las variables dat, gdp y new sólo existen dentro del cuerpo de la función. Incluso, si tenemos variables con el mismo nombre en nuestra sesión interactiva de R, éstas no son modificadas en ninguna manera cuando se ejecuta la función.
+ 
+La familia apply
+
+La familia de funciones apply es usada para aplicar una función a cada elemento de una estructura de datos. En particular, es usada para aplicar funciones en matrices, data frames, arrays y listas.
+
+Con esta familia de funciones podemos automatizar tareas complejas usando poca líneas de código y es una de las características distintivas de R como lenguaje de programación.
+
+La familia de funciones apply es una expresión de los rasgos del paradigma funcional de programación presentes en R. Sobre esto no profundizaremos demasiado, pero se refiere saber que en R las funciones son “ciudadanos de primera”, con la misma importancia que los objetos, y por lo tanto, operamos en ellas.
+
+La familia de funciones apply no sólo recibe datos como argumentos, también recibe funciones.
+
+Las funciones de la familia apply
+ 
+La familia apply esta formada por las siguientes funciones:
+
+apply()
+eapply()
+lapply()
+mapply()
+rapply()
+sapply()
+tapply()
+vapply()
+
+Es una familia numerosa y esta variedad de funciones se debe a que varias de ellas tienen aplicaciones sumamente específicas.
+
+Todas las funciones de esta familia tienen una característica en común: reciben como argumentos a un objeto y al menos una función.
+
+Hasta ahora, todas las funciones que hemos usado han recibido como argumentos estructuras de datos, sean vectores, data frames o de otro tipo. Las funciones de la familia apply tienen la particularidad que pueden recibir a otra función como un argumento. Lo anterior puede sonar confuso, pero es más bien intuitivo al verlo implementado.
+
+apply()
+lapply()
+vapply()
+
+Estas 3 funciones nos permitirán solucionar casi todos los problemas a los que nos encontremos. Además, conociendo su uso, las demás funciones de la familia apply serán relativamente fáciles de entender.
+
+Sintaxis de la funcion apply aplica una función a todos los elementos de una matriz.
+
+La estructura de esta función es la siguiente.
+
+apply(X, MARGIN, FUN)
+
+
+
+X: Una matriz o un objeto que pueda coercionarse a una matriz, generalmente, un data frame.
+MARGIN: La dimensión (margen) que agrupará los elementos de la matriz X, para aplicarles una función. Son identificadas con números, 1 son renglones y 2 son colummnas.
+FUN: La función que aplicaremos a la matriz X en su dimención MARGIN.
+ 
+El comando apply en R permite aplicar una función a través de una matriz, array o data frame. Puedes hacer esto de varias maneras, dependiendo de cómo configures el argumento MARGIN, que habitualmente puede tomar los valores 1, 2 o c(1, 2).
+ 
+ 
+Ejemplo:
+
+```{r}
+# Data frame
+df <- data.frame(x = 1:4, y = 5:8, z = 10:13)
+df
+
+apply(X = df, MARGIN = 1, FUN = sum)
+
+apply(df, 1, sum)
+
+apply(df[c(1, 2), ], 1, sum)
+
+```
+Sintaxis de la función lapply()
+
+La función lapply aplica una función a una lista o a un vector y devuelve una lista de la misma longitud que el objeto de entrada. La sintaxis de la función es como sigue:
+
+```{r}
+a <- list(A = c(8, 9, 7, 5),
+          B = data.frame(x = 1:5, y = c(5, 1, 0, 2, 3)))
+a
+
+lapply(a, sum)
+```
+lapply con argumentos adicionales
+
+Vale la pena mencionar que si la función que estás pasando al argumento FUN tiene argumentos adicionales puedes establecerlos después de la función, usando una coma, tal y como se muestra en el siguiente ejemplo donde especificamos el argumento probs de la función quantile.
+
+```{r}
+c <- list(A = c(56, 12, 57, 24), B = c(89, 12, 64, 18, 65, 76))
+
+lapply(c,                           # Lista
+       quantile,                    # Función aplicada
+       probs = c(0.25, 0.5, 0.75))  # Argumento adicional de la función quantile
+```
+lapply con una función propia
+
+ambién es posible aplicar una función propia con la función lapply. Para ese propósito puedes crear una función y pasar su nombre al argumento FUN o escribir directamente la función dentro de la función lapply, tal y como se muestra en el siguiente bloque de código:
+
+```{r}
+d <- 1:3
+
+# Función para elevar al cuadrado
+fun <- function(x) {
+    x ^ 2
+}
+
+# Aplicamos la función 'fun'
+lapply(d, fun)
+lapply(d, FUN = function(x) x ^ 2) # Equivalente
+lapply(d, function(x) x ^ 2) # Equivalente
+
+```
+lapply en las columnas de un data frame
+
+Supón que tienes un data frame y que quieres multiplicar los elementos de la primera columna por uno, los elementos de la segunda por dos y así sucesivamente.
+
+Por una parte, si quieres realizar el cálculo para todas las columnas puedes escribir:
+
+```{r}
+df <- data.frame(x = c(6, 2), y = c(3, 6), z = c(2, 3))
+
+# Función aplicada a todas las columnas
+lapply(1:ncol(df), function(i) df[, i] * i)
+```
+
+sintaxis Vapply
+Devuelve un vector con la longitud que tiene cada una de las listas introducidas como parámetro.
+
+
+```{r}
+x <- list(A = 1, B = 1:3, C = 1:7)
+x
+$a
+
+vapply(x, FUN = length, FUN.VALUE = 0L)
+```
+
